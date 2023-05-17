@@ -34,16 +34,16 @@ function randomIndexGenerator() {
 let indexArray = [];    
 
 function renderImgs() {
-    while(indexArray.length < 3){
+    while(indexArray.length < 6){
         let randomNumber = randomIndexGenerator();
         if(!indexArray.includes(randomNumber)){
             indexArray.push(randomNumber);
         }
     }
 
-    let imgOneIndex = indexArray.pop();
-    let imgTwoIndex = indexArray.pop();
-    let imgThreeIndex = indexArray.pop();
+    let imgOneIndex = indexArray.shift();
+    let imgTwoIndex = indexArray.shift();
+    let imgThreeIndex = indexArray.shift();
 
     imgOne.src = productArray[imgOneIndex].image
     imgOne.title = productArray[imgOneIndex].name
@@ -102,7 +102,6 @@ function renderChart() {
     new Chart(ctx, chartObj);
 }
 
-
 // ***** EVENT HANDLER *****
 
 function handleImgClick(event) {
@@ -114,8 +113,15 @@ function handleImgClick(event) {
             renderImgs();
         }
     }
+
     if (votingRounds === 0) {
         imgContainer.removeEventListener('click', handleImgClick);
+
+// ***** LOCAL STORAGE *****
+
+        let stringifedProducts = JSON.stringify(productArray);
+
+        localStorage.setItem('myProducts', stringifedProducts)
     }
 }
 
@@ -130,28 +136,40 @@ function handleShowResults() {
 
 // ***** EXECUTABLE CODE *****
 
-let bag = new Product('bag');
-let banana = new Product('banana');
-let bathroom = new Product('bathroom');
-let boots = new Product('boots');
-let breakfast = new Product('breakfast');
-let bubblegum = new Product('bubblegum');
-let chair = new Product('chair');
-let cthulhu = new Product('cthulhu');
-let dogDuck = new Product('dog-duck');
-let dragon = new Product('dragon');
-let pen = new Product('pen');
-let petSweep = new Product('pet-sweep');
-let scissors = new Product('scissors');
-let shark = new Product('shark');
-let sweep = new Product('sweep', 'png');
-let tauntaun = new Product('tauntaun');
-let unicorn = new Product('unicorn');
-let waterCan = new Product('water-can');
-let wineGlass = new Product('wine-glass');
+// ***** LOCAL STORAGE CONT. *****
 
+let retrievedProducts = localStorage.getItem('myProducts');
 
-productArray.push(bag, banana, bathroom, boots, breakfast, bubblegum, chair, cthulhu, dogDuck, dragon, pen, petSweep, scissors, shark, sweep, tauntaun, unicorn, waterCan, wineGlass);
+let parsedProducts = JSON.parse(retrievedProducts);
+
+// ***** HAPPY PATH *****
+
+if(retrievedProducts){
+    productArray = parsedProducts;
+}   else{
+
+    let bag = new Product('bag');
+    let banana = new Product('banana');
+    let bathroom = new Product('bathroom');
+    let boots = new Product('boots');
+    let breakfast = new Product('breakfast');
+    let bubblegum = new Product('bubblegum');
+    let chair = new Product('chair');
+    let cthulhu = new Product('cthulhu');
+    let dogDuck = new Product('dog-duck');
+    let dragon = new Product('dragon');
+    let pen = new Product('pen');
+    let petSweep = new Product('pet-sweep');
+    let scissors = new Product('scissors');
+    let shark = new Product('shark');
+    let sweep = new Product('sweep', 'png');
+    let tauntaun = new Product('tauntaun');
+    let unicorn = new Product('unicorn');
+    let waterCan = new Product('water-can');
+    let wineGlass = new Product('wine-glass');
+
+    productArray.push(bag, banana, bathroom, boots, breakfast, bubblegum, chair, cthulhu, dogDuck, dragon, pen, petSweep, scissors, shark, sweep, tauntaun, unicorn, waterCan, wineGlass);
+}
 
 renderImgs();
 
