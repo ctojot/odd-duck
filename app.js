@@ -13,7 +13,8 @@ let imgOne = document.getElementById('img-one');
 let imgTwo = document.getElementById('img-two');
 let imgThree = document.getElementById('img-three');
 let resultBtn = document.getElementById('show-results-btn');
-let resultList = document.getElementById('results-container');
+
+let ctx = document.getElementById('my-chart');
 
 // ***** CONSTRUCTOR FUNCTION *****
 
@@ -30,15 +31,19 @@ function randomIndexGenerator() {
     return Math.floor(Math.random() * productArray.length);
 }
 
-function renderImgs() {
-    let imgOneIndex = randomIndexGenerator();
-    let imgTwoIndex = randomIndexGenerator();
-    let imgThreeIndex = randomIndexGenerator();
+let indexArray = [];    
 
-    while (imgOneIndex === imgTwoIndex || imgOneIndex === imgThreeIndex || imgTwoIndex === imgThreeIndex) {
-        imgTwoIndex = randomIndexGenerator();
-        imgThreeIndex = randomIndexGenerator();
+function renderImgs() {
+    while(indexArray.length < 3){
+        let randomNumber = randomIndexGenerator();
+        if(!indexArray.includes(randomNumber)){
+            indexArray.push(randomNumber);
+        }
     }
+
+    let imgOneIndex = indexArray.pop();
+    let imgTwoIndex = indexArray.pop();
+    let imgThreeIndex = indexArray.pop();
 
     imgOne.src = productArray[imgOneIndex].image
     imgOne.title = productArray[imgOneIndex].name
@@ -54,6 +59,50 @@ function renderImgs() {
     productArray[imgThreeIndex].views++
 }
 
+function renderChart() {
+    let productNames = [];
+    let productViews = [];
+    let productVotes = [];
+
+    for (let i = 0; i < productArray.length; i++) {
+        productNames.push(productArray[i].name);
+        productViews.push(productArray[i].views);
+        productVotes.push(productArray[i].votes);
+    }
+
+    let chartObj = {
+        type: 'bar',
+        data: {
+            labels: productNames,
+            datasets: [{
+                label: '# of Views',
+                data: productViews,
+                borderWidth: 2,
+                backgroundColor: 'red',
+                borderColor: 'black'
+            },
+            {
+                label: '# of Votes',
+                data: productVotes,
+                borderWidth: 2,
+                backgroundColor: 'blue',
+                borderColor: 'black'
+            },
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    new Chart(ctx, chartObj);
+}
+
+
 // ***** EVENT HANDLER *****
 
 function handleImgClick(event) {
@@ -65,7 +114,7 @@ function handleImgClick(event) {
             renderImgs();
         }
     }
-    if (votingRounds === 0){
+    if (votingRounds === 0) {
         imgContainer.removeEventListener('click', handleImgClick);
     }
 }
@@ -73,14 +122,9 @@ function handleImgClick(event) {
 
 function handleShowResults() {
     if (votingRounds === 0) {
-        for (let i = 0; i < productArray.length; i++) {
-            let productListItem = document.createElement('li');
-            productListItem.textContent = `${productArray[i].name} - Votes: ${productArray[i].votes} & Views: ${productArray[i].views}`;
-
-            resultList.appendChild(productListItem);
-        }
-        resultBtn.removeEventListener('click', handleShowResults);
+        renderChart();
     }
+    resultBtn.removeEventListener('click', handleShowResults);
 }
 
 
